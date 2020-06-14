@@ -7,11 +7,14 @@ section .text
         mov     bx,0d
 
 	call 	texto
-        call    gd
-
-lupi:	call 	kbwait
-	cmp 	al, "$"
-	je	mostrar
+	call 	cursor
+	call	phrase2
+	call 	kbwait
+	int	20h
+lupi:	
+	call 	kbwait
+	cmp 	si, 5d
+	jbe	mostrar
 	mov	[300h], al
         call    gd
 	inc 	si
@@ -101,22 +104,6 @@ m_cursr1:
 	int 	10h
 	ret
 
-m_cursr2:
-        mov 	ah, 02h
-	mov 	dx, di  ; columna
-	mov 	dh, 9d ; fila
-	mov 	bh, 0h
-	int 	10h
-	ret
-
-m_cursr3:
-        mov 	ah, 02h
-	mov 	dx, di  ; columna
-	mov 	dh, 15d ; fila
-	mov 	bh, 0h
-	int 	10h
-	ret
-
 phrase1:	
         mov 	di, 0d
 
@@ -134,7 +121,7 @@ phrase2:
 
 lupi2:	
         mov 	cl, [msg2+di]
-	call    m_cursr2
+	call    m_cursr1
 	call 	w_char
 	inc	di
 	cmp 	di, len2
@@ -146,7 +133,7 @@ phrase3:
 
 lupi3:	
         mov 	cl, [msg3+di]
-	call    m_cursr3
+	call    m_cursr1
 	call 	w_char
 	inc	di
 	cmp 	di, len3
