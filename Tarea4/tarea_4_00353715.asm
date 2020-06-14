@@ -1,73 +1,100 @@
 org 	100h
 
 section .text
-        mov     si,0d
-        mov     ax,0d
-        mov     cx,5d
-        mov     bx,0d
-
-	call 	texto
-	call 	cursor
-	call	phrase2
-	call 	kbwait
-	int	20h
+        ;para correrlo poner un numero mas del carnet por ejemplo el mio es 00353715 los ultimos 5 son 53715 pero en el input seria 537150 o cualquier otro numero extra para que termine el loop
+	xor 	si, si 	;lo mimso que: mov si, 0000h
 lupi:	
-	call 	kbwait
-	cmp 	si, 5d
-	jbe	mostrar
-	mov	[300h], al
-        call    gd
+        call 	kb
+	cmp 	si,5d 
+	je	promedio
+        sub     al, 30h
+	mov	[300h+si], al ; CS:0300h en adelante
 	inc 	si
 	jmp 	lupi
 
-	int 	20h
+promedio:
+        mov     bx, 0d
+        mov     ax, 0d
 
-gd:     
-        mov     bx,[300h]
-        mov     ax,0d
-        add     ax,bx
-        mov     [301h],ax
-        ret
-
+lupi2:    
+        add     al, [300h+bx]
+        inc     bx
+        cmp     bx, 5d
+        jb      lupi2
+        mov     [310h], al
+        mov     [320h], bl
+        mov     cl, bl
+        div     cl
+        mov     [330h], al
 
 mostrar:
-        mov     ax,[301h]
-        div     cx
-        call 	cursor
-                 
-        cmp     ax,10d   
-        je      phrase1 
-
-        cmp     ax,9d
-        je      phrase2
-
-        cmp     ax,8d
-        je      phrase3
-        
-        cmp     ax,7d
+        mov 	dx, nl
+	call	w_strng
+	cmp     al, 10d
         je      phrase1
-        
-        cmp     ax,6d
+        cmp     al, 9d
         je      phrase2
-        
-        cmp     ax,5d
+        cmp     al, 8d
         je      phrase3
-        
-        cmp     ax,4d
-        je      phrase1
-        
-        cmp     ax,3d
-        je      phrase2
-        
-        cmp     ax,2d
-        je      phrase3
-        
-        cmp     ax,1d
-        je      phrase1
+        cmp     al, 7d
+        je      phrase4
+        cmp     al, 6d
+        je      phrase5
+        cmp     al, 5d
+        je      phrase6
+        cmp     al, 4d
+        je      phrase7
+        cmp     al, 3d
+        je      phrase8
+        cmp     al, 2d
+        je      phrase9
+        cmp     al, 1d
+        je      phrase10
 
-        call    kbwait
+phrase1:	
+        mov 	dx, msg1
+        jmp     comm
 
-        int 20h
+phrase2:	
+        mov 	dx, msg2
+        jmp     comm
+
+phrase3:	
+        mov 	dx, msg3
+        jmp     comm
+
+phrase4:	
+        mov 	dx, msg4
+        jmp     comm
+
+phrase5:	
+        mov 	dx, msg5
+        jmp     comm
+
+phrase6:	
+        mov 	dx, msg6
+        jmp     comm
+
+phrase7:	
+        mov 	dx, msg7
+        jmp     comm
+
+phrase8:	
+        mov 	dx, msg8
+        jmp     comm
+
+phrase9:	
+        mov 	dx, msg9
+        jmp     comm
+
+phrase10:	
+        mov 	dx, msg0
+        jmp     comm
+	
+comm:   
+        call 	w_strng
+	call 	kb
+	int 	20h
 
 texto:	
         mov 	ah, 00h
@@ -75,99 +102,26 @@ texto:
 	int 	10h
 	ret
 
-cursor: 
-        mov     ah, 01h
-	mov 	ch, 00000000b
-	mov 	cl, 00001110b;   IRGB
-	int 	10h
+kb: 	
+        mov	ah, 1h
+	int 	21h
 	ret
 
-w_char:	
-        mov 	ah, 09h
-	mov 	al, cl
-	mov 	bh, 0h
-	mov 	bl, 00001111b
-	mov 	cx, 1h
-	int 	10h
-	ret
-
-kbwait: 
-        mov 	ax, 0000h
-	int 	16h
-	ret
-
-m_cursr1:
-        mov 	ah, 02h
-	mov 	dx, di  ; columna
-	mov 	dh, 3d ; fila
-	mov 	bh, 0h
-	int 	10h
-	ret
-
-phrase1:	
-        mov 	di, 0d
-
-lupi1:	
-        mov 	cl, [msg1+di]
-	call    m_cursr1
-	call 	w_char
-	inc	di
-	cmp 	di, len
-	jb	lupi1
-	ret
-
-phrase2:	
-        mov 	di, 0d
-
-lupi2:	
-        mov 	cl, [msg2+di]
-	call    m_cursr1
-	call 	w_char
-	inc	di
-	cmp 	di, len2
-	jb	lupi2
-	ret
-
-phrase3:	
-        mov 	di, 0d
-
-lupi3:	
-        mov 	cl, [msg3+di]
-	call    m_cursr1
-	call 	w_char
-	inc	di
-	cmp 	di, len3
-	jb	lupi3
+w_strng:
+        mov	ah, 09h
+	int 	21h
 	ret
 
 section .data
 
-msg1    db 	"Perfecto solo Dios"
-len 	equ	$-msg1
-
-msg2	db 	"Siempre me esfuerzo"
-len2	equ	$-msg2
-
-msg3	db 	"Colocho"
-len3 	equ	$-msg3
-
-msg4	db 	"Muy bien"
-len4 	equ	$-msg4
-
-msg5	db 	"Peor es nada"
-len5 	equ	$-msg5
-
-msg6	db 	"En el segundo"
-len6 	equ	$-msg6
-
-msg7	db 	"Me recupero"
-len7 	equ	$-msg7
-
-msg8	db 	"Hay salud"
-len8 	equ	$-msg8
-
-msg9	db 	"Aun se pasa"
-len9 	equ	$-msg9
-
-msg10	db 	"Solo necesito el 0"
-len10 	equ	$-msg10
+msg1 	db 	"Perfecto solo Dios$"
+msg2 	db 	"Siempre me esfuerzo$"
+msg3 	db 	"Colocho$"
+msg4 	db 	"Muy bien$"
+msg5 	db 	"Peor es nada$"
+msg6 	db 	"En el segundo$"
+msg7 	db 	"Me recupero$"
+msg8 	db 	"Hay salud$"
+msg9 	db 	"Aun se pasa$"
+msg0 	db 	"Solo necesito el 0$"
+nl	db 	0xA, 0xD, "$"
