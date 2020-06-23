@@ -9,35 +9,57 @@ section .text
 
 	mov 	si, 100d ; X -> Columna
 	mov 	di, 50d ; Y -> Fila
+	mov	bl, 100d
+	mov	[300h],bl
 	call 	linea_v
 
 	mov 	si, 145d ; X -> Columna
 	mov 	di, 50d ; Y -> Fila
-	call 	linea_v_60
+	mov	bl, 60d
+	mov	[300h],bl
+	call 	linea_v
 
         mov 	si, 110d ; X -> Columna
 	mov 	di, 60d ; Y -> Fila
-	call 	linea_v_90
+	mov	bl, 90d
+	mov	[300h],bl
+	call 	linea_v
 
 	mov 	si, 145d ; X -> Columna
 	mov 	di, 90d ; Y -> Fila
+	mov	bl, 100d
+	mov	[300h],bl
 	call 	linea_v
 
         mov 	si, 100d ; X -> Columna
 	mov 	di, 50d ; Y -> Fila
+	mov	bl, 145d
+	mov	[300h],bl
 	call 	linea_h
 
         mov 	si, 110d ; X -> Columna
 	mov 	di, 60d ; Y -> Fila
+	mov	bl, 145d
+	mov	[300h],bl
 	call 	linea_h
 
         mov 	si, 110d ; X -> Columna
 	mov 	di, 90d ; Y -> Fila
+	mov	bl, 145d
+	mov	[300h],bl
 	call 	linea_h
 
         mov 	si, 100d ; X -> Columna
 	mov 	di, 100d ; Y -> Fila
+	mov	bl, 145d
+	mov	[300h],bl
 	call 	linea_h
+
+	;mov 	si, 50d ; X -> Columna
+	;mov 	di, 50d ; Y -> Fila
+	;mov	bl,100d
+	;mov	[300h],bl
+	;call 	linea_d
 
 	call 	kb		; Utilizamos espera de alguna tecla
 
@@ -59,7 +81,7 @@ lupi_h:	mov 	cx, 0d ; Columna
 	mov	dx, di ; Fila
 	call 	pixel
 	inc 	si
-	cmp 	si, 145d
+	cmp 	si, [300h]
 	jne 	lupi_h
 	ret
 
@@ -69,28 +91,19 @@ lupi_v:	mov 	cx, si ; Columna
 	add 	dx, di
 	call 	pixel
 	inc 	di
-	cmp 	di, 100d
+	cmp 	di, [300h]
 	jne 	lupi_v
 	ret
 
-linea_v_60:
-lupi_v_1:	mov 	cx, si ; Columna 
+linea_d:
+lupi_d:	mov 	cx, si ; Columna 
 	mov	dx, 0d ; Fila
 	add 	dx, di
 	call 	pixel
 	inc 	di
-	cmp 	di, 60d
-	jne 	lupi_v_1
-	ret
-
-linea_v_90:
-lupi_v_2:	mov 	cx, si ; Columna 
-	mov	dx, 0d ; Fila
-	add 	dx, di
-	call 	pixel
-	inc 	di
-	cmp 	di, 90d
-	jne 	lupi_v_2
+	inc	si
+	cmp 	di, [300h]
+	jne 	lupi_d
 	ret
 
 kb: 	mov	ah, 00h
